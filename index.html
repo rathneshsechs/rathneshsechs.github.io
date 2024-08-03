@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .email {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Email Viewer</h1>
+    <div id="email-container"></div>
+
+    <script>
+        async function fetchEmails() {
+            const response = await fetch('https://api.testmail.app/api/json', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ebf09c9a-4539-451e-8ba6-55eae781712b'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const emails = await response.json();
+            return emails;
+        }
+
+        async function displayEmails() {
+            try {
+                const emails = await fetchEmails();
+                const container = document.getElementById('email-container');
+
+                emails.forEach(email => {
+                    const emailDiv = document.createElement('div');
+                    emailDiv.classList.add('email');
+                    emailDiv.innerHTML = DOMPurify.sanitize(email.content); // Assuming 'content' holds the HTML of the email
+                    container.appendChild(emailDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching emails:', error);
+            }
+        }
+
+        displayEmails();
+    </script>
+</body>
+</html>
